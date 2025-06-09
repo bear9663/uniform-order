@@ -1,0 +1,53 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Yu Gothic', sans-serif;
+  }
+  
+  /* 全体背景と中央配置 */
+  .my-form-wrapper {
+    display: flex;
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center;     /* 垂直方向の中央揃え */
+    min-height: 100vh;       /* ビューポートの高さに合わせる */
+    background: linear-gradient(to bottom right, #002B5C, #00A3E0); /* 背景のグラデーション */
+    padding-top: 2rem; 
+  }
+  
+  /* フォームカード */
+  .my-form-card {
+  max-width: 800px;
+  width: 100%;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  margin: 0 auto; 
+  }
+  
+  /* タイトル */
+  .my-form-title {
+    color: #002B5C;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* ボタン */
+  .my-form-button {
+    background-color: #00A3E0;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    border-radius: 0.5rem;
+    transition: 0.2s ease;
+  }
+  
+  .my-form-button:hover {
+    background-color: #008CBF;
+  }
+  
+  .my-form-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
