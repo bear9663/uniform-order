@@ -1,7 +1,0 @@
-{
-    // すでに別の設定がある場合は最後にカンマを忘れずに
-    "css.lint.unknownAtRules": "ignore",
-    "scss.lint.unknownAtRules": "ignore",
-    "less.lint.unknownAtRules": "ignore"
-  }
-  
