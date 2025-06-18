@@ -18,9 +18,9 @@ export default function OrderRow({ order, isOpen, onToggle }) {
                 <td className="border p-2 text-center">
                 <button
                     onClick={() => onToggle(order.id)}
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600"
                 >
-                    {isOpen ? "▲ 閉じる" : "▼ 詳細"}
+                    {isOpen ? "▲" : "▼"}
                 </button>
                 </td>
             </tr>

@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import OrderRow from "./OrderRow";
 import { PRODUCTS } from "./products/product";
+import { useOrders } from "./hooks/useOrders"
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState([]);
+  const { orders, loading, error } = useOrders();
   const [search, setSearch] = useState("");
   const [sortAsc, setSortAsc] = useState(true);
   const [openIds, setOpenIds] = useState([]);
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/orders")
-      .then(res => res.json())
-      .then(data => setOrders(data))
-      .catch(console.error);
-  }, []);
+  if (loading) return <p>読み込み中...</p>
+  if (error) return <p>読み込み中にエラーが発生しました。</p>
 
   const filtered = orders.filter(o =>
     (o.child_name + o.parent_name)
