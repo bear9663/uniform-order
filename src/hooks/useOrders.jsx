@@ -1,24 +1,27 @@
-import { useEffect, useState } from "react";
+// src/hooks/useOrders.js
+import { useState, useEffect } from "react";
 
-export default function useOrders() {
-    const [orders, setOrders] = useState({});
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
+export function useOrders() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetch("http://localhost:3000/api/orders")
-        .then(res => res.json())
-        .then(data => {
-            setOrders(data)
-            setLoading(false);
-        })
-        .catch(err => {
-            setError(err);
-            setLoading(false);
-            console.error("Error fetching orders:", err);
-        });
-    }, []);
+  useEffect(() => {
+    fetch("http://localhost:3000/api/orders")
+      .then(res => {
+        if (!res.ok) throw new Error("注文一覧の取得に失敗");
+        return res.json();
+      })
+      .then(data => {
+        setOrders(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setError(err);
+        setLoading(false);
+      });
+  }, []);
 
-    return { orders, error, loading };
-
+  return { orders, loading, error };
 }

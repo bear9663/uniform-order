@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import OrderRow from "./OrderRow";
 import { PRODUCTS } from "./products/product";
-import { useOrders } from "./hooks/useOrders"
+import { useOrders } from "../hooks/useOrders"
 
 export default function AdminOrders() {
   const { orders, loading, error } = useOrders();
