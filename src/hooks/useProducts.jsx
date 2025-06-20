@@ -1,76 +1,89 @@
 import { useState, useEffect, useCallback } from "react";
 
 export function useProducts() {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [products, setProducts] = useState([]);    
+  const [loading, setLoading] = useState(true);    
+  const [error, setError] = useState(null);        
 
-    const fetchProducts = useCallback(() => {
-        setLoading(true);
-        fetch("/api/products")
-            .then(res => {
-                if (!res.ok) throw new Error("表品の一覧の取得に失敗しました");
-                return res.json
-            })
-            .then(data => {
-                setProducts(data);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setError(err);
-                setLoading(false);
-            })
-    }, []);
-
-    useEffect(() => {
-        fetchProducts();
-    }, {fetchProducts});
-
-    const addProduct = (id, name, prize, size) => {
-        fetch("/api/products", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, prize, size }),
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("商品の追加に失敗しました");
-                return res.json();
-            })
-            .then(() => fetchProducts());
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:3000/api/products");
+      if (!res.ok) throw new Error("商品一覧の取得に失敗しました");
+      const data = await res.json();              
+      setProducts(data);
+    } catch (e) {
+      console.error(e);
+      setError(e);
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    const updataProducts = (id, name, prize, size) => {
-        fetch(`/api/products/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(),
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("商品の更新に失敗しました");
-                return res.json();
-            })
-            .then(() => fetchProducts());
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);                             
+
+  const addProduct = useCallback(async (name, price) => {    
+    try {
+      const res = await fetch("http://localhost:3000/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, price }),
+      });
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.log("Error response:", errorText);
+        throw new Error("商品の追加に失敗しました");
+      }
+      
+      const result = await res.json();
+      console.log("Success result:", result);
+      fetchProducts();
+    } catch (e) {
+      console.error("Full error:", e);
+      setError(e);
     }
+  }, [fetchProducts]);
 
-    const deleteProducts = (id) => {
-        fetch(`/api/products`, {
-            method: "DELETE",
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("商品の削除に失敗しました");
-                return res.json();
-            })
-            .then(() => fetchProducts());
+  const updateProduct = useCallback(async (id, name, price) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, price }),     
+      });
+      if (!res.ok) throw new Error("商品の更新に失敗しました");
+      await res.json();
+      fetchProducts();
+    } catch (e) {
+      console.error(e);
+      setError(e);
     }
+  }, [fetchProducts]);
 
-    return {
-        products,
-        loading,
-        error,
-        addProduct,
-        updataProducts,
-        deleteProducts,
-        refresh: fetchProducts,
-    };
+  const deleteProduct = useCallback(async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/products/${id}`, {  
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("商品の削除に失敗しました");
+      await res.json();
+      fetchProducts();
+    } catch (e) {
+      console.error(e);
+      setError(e);
+    }
+  }, [fetchProducts]);
+
+  return {
+    products,
+    loading,
+    error,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    refresh: fetchProducts,
+  };
 }
