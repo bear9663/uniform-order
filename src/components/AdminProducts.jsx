@@ -45,7 +45,7 @@ export default function AdminProducts() {
           </div>
           <button
             onClick={() => addProduct(name, Number(price))}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold rounded p-2"
+            className="bg-blue-500 hover:bg-white text-white hover:text-blue-500 hover:border hover:border-blue-500 font-semibold rounded p-2"
           >
             商品を追加
           </button>
@@ -63,7 +63,7 @@ export default function AdminProducts() {
               </div>
               <div className="flex gap-2 mt-2 md:mt-0">
                 <button
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold rounded px-3 py-1"
+                  className="bg-blue-500 hover:bg-white text-white hover:text-blue-500 hover:border hover:border-blue-500 font-semibold rounded px-3 py-1"
                 >
                   編集
                 </button>
