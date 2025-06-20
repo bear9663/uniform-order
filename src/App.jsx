@@ -13,7 +13,7 @@ export default function App() {
         <Route path="/" element={<OrderForm />} />
 
         <Route path="/admin" element={<AdminLayout/>}>
-          <Route path="/admin" element={<AdminDashboard/>} />
+          <Route index element={<AdminDashboard/>} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/products" element={<AdminProducts/>} />
         </Route>
