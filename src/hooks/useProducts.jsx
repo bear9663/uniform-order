@@ -24,12 +24,13 @@ export function useProducts() {
     fetchProducts();
   }, [fetchProducts]);                             
 
-  const addProduct = useCallback(async (name, price) => {    
+  const addProduct = useCallback(async (product) => {
+    const { name, price, sizes } = product; 
     try {
       const res = await fetch("http://localhost:3000/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, price }),
+        body: JSON.stringify({ name, price, sizes }),
       });
       
       if (!res.ok) {
@@ -47,12 +48,12 @@ export function useProducts() {
     }
   }, [fetchProducts]);
 
-  const updateProduct = useCallback(async (id, name, price) => {
+  const updateProduct = useCallback(async (id, name, price, sizes) => {
     try {
       const res = await fetch(`http://localhost:3000/api/products/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, price }),     
+        body: JSON.stringify({ name, price, sizes }),     
       });
       if (!res.ok) throw new Error("商品の更新に失敗しました");
       await res.json();
