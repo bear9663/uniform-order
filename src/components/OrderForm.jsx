@@ -109,10 +109,10 @@ export default function OrderForm() {
                   <td className="border p-2">
                     <select {...register(`items.${idx}.size`)} className="border p-1 text-sm rounded">
                       <option value="">--</option>
-                      <option value="S">S</option>
-                      <option value="M">M</option>
-                      <option value="L">L</option>
-                      <option value="LL">LL</option>
+                      <option value="100">100</option>
+                      <option value="110">110</option>
+                      <option value="120">120</option>
+                      <option value="130">130</option>
                       <option value="特注">特注</option>
                     </select>
                   </td>
