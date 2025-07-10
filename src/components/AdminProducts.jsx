@@ -17,8 +17,30 @@ export default function AdminProducts() {
   const [price, setPrice] = useState(0);
   const [sizes, setSizes] = useState([]);
 
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editPrice, setEditPrice] = useState(0);
+  const [editSizes, setEditSizes] = useState([]);
+
   if (loading) return <p className="text-center py-8">読み込み中...</p>;
   if (error) return <p className="text-center py-8 text-red-600">エラー: {error.message}</p>;
+
+  const toggleEdit = (val, list, setter) => {
+    setter(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
+  };
+
+  const startEdit = (p) => {
+    setEditingId(p.id);
+    setEditName(p.name);
+    setEditPrice(p.price);
+    setEditSizes(p.sizes);
+  };
+
+  const cancelEdit = () => setEditingId(null);
+
+  const saveEdit = async() => {
+    await updateProduct({ name, price})
+  }
 
   const toggleSize = (size) => {
     setSizes(prev =>
@@ -97,6 +119,7 @@ export default function AdminProducts() {
               </div>
               <div className="flex gap-2 mt-2 md:mt-0">
                 <button
+                  onClick={() => updateProduct(p.id)}
                   className="bg-blue-500 hover:bg-white text-white hover:text-blue-500 hover:border hover:border-blue-500 font-semibold rounded px-3 py-1"
                 >
                   編集
