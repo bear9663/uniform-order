@@ -9,38 +9,17 @@ export default function AdminProducts() {
     loading,
     error,
     addProduct,
-    updateProduct,
     deleteProduct,
   } = useProducts();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [sizes, setSizes] = useState([]);
+  const [message, setMessage] = useState("");
 
-  const [editingId, setEditingId] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [editPrice, setEditPrice] = useState(0);
-  const [editSizes, setEditSizes] = useState([]);
 
   if (loading) return <p className="text-center py-8">読み込み中...</p>;
   if (error) return <p className="text-center py-8 text-red-600">エラー: {error.message}</p>;
-
-  const toggleEdit = (val, list, setter) => {
-    setter(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
-  };
-
-  const startEdit = (p) => {
-    setEditingId(p.id);
-    setEditName(p.name);
-    setEditPrice(p.price);
-    setEditSizes(p.sizes);
-  };
-
-  const cancelEdit = () => setEditingId(null);
-
-  const saveEdit = async() => {
-    await updateProduct({ name, price})
-  }
 
   const toggleSize = (size) => {
     setSizes(prev =>
@@ -55,15 +34,21 @@ export default function AdminProducts() {
     setName("");
     setPrice(0);
     setSizes([]);
+
+    setMessage("商品を追加しました！")
+    setTimeout(() => setMessage(""), 3000);
   };
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold mb-6 text-center text-blue-700">
+    <div className="min-h-screen p-2">
+      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-10">
+        <h1 className="text-3xl font-bold mb-6 text-left">
           商品一覧
         </h1>
-        <div className="mb-8 space-y-4">
+        <div className="mb-8 space-y-6">
+          {message && (
+            <div className="text-green-400 border border-green-400 rounded-lg px-3 py-1">{message}</div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               value={name}
@@ -85,24 +70,32 @@ export default function AdminProducts() {
             </div>
             <button
               onClick={handleAdd}
-              className="bg-blue-500 hover:bg-white text-white hover:text-blue-500 hover:border hover:border-blue-500 font-semibold rounded p-2"
+              className="bg-[#0c2a46] hover:bg-white text-white hover:text-[#0c2a46] hover:border hover:border-[#0c2a46] font-semibold rounded p-2 transition"
             >
               商品を追加
             </button>
           </div>
-          <div className="flex flex-wrap gap-4">
-            <div>サイズ展開: </div>
-            {SIZE_OPTIONS.map(size => (
-              <label key={size} className="flex items-center space-x-1">
-                <input 
-                  type="checkbox"
-                  checked={sizes.includes(size)}
-                  onChange={() => toggleSize(size)}
-                  className="h-4 w-4 text-blue-600 border-gray-300 rounded-md"
-                />
-                <span className="select-none">{size}</span>
-              </label>
-            ))}
+          <div className="flex gap-4 items-center">
+            <div className="font-semibold">サイズ展開:</div>
+            {SIZE_OPTIONS.map(size => {
+              const selected = sizes.includes(size);
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => toggleSize(size)}
+                  className={`px-3 py-1 rounded-full border 
+                    ${selected 
+                      ? "bg-[#0c2a46] text-white border-[#0c2a46]" 
+                      : "bg-white text-[#0c2a46] border-[#0c2a46]"
+                    } 
+                    hover:bg-[#d6dee6] transition`
+                  }
+                >
+                  {size}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -118,12 +111,6 @@ export default function AdminProducts() {
                 <div className="text-sm">サイズ: {p.sizes.join("・")}</div>
               </div>
               <div className="flex gap-2 mt-2 md:mt-0">
-                <button
-                  onClick={() => updateProduct(p.id)}
-                  className="bg-blue-500 hover:bg-white text-white hover:text-blue-500 hover:border hover:border-blue-500 font-semibold rounded px-3 py-1"
-                >
-                  編集
-                </button>
                 <button
                   onClick={() => deleteProduct(p.id)}
                   className="bg-red-500 hover:bg-red-600 text-white font-semibold rounded px-3 py-1"

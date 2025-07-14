@@ -1,8 +1,6 @@
 import { useForm, useWatch } from "react-hook-form";
 import { useEffect } from "react";
-import { useProductList, PRODUCTS } from "./products/product";
-
-// 商品一覧を取得し、APIが使えない場合は PRODUCTS を使用
+import { useProductList } from "./products/product";
 
 export default function OrderForm() {
   const { products: productList, loading, error } = useProductList();
@@ -17,7 +15,7 @@ export default function OrderForm() {
       address: "",
       height: "",
       weight: "",
-      items: PRODUCTS.map(() => ({ size: "", quantity: 0, customSize: "" })),
+      items: productList.map(() => ({ size: "", quantity: 0, customSize: "" })),
     },
   });
 
@@ -70,7 +68,7 @@ export default function OrderForm() {
       }
     } catch (err) {
       console.error(err);
-      alert("通信エラーが発生しました。");
+      alert("通信エラーが発生しました。もう一度お試しください。");
     }
   };
 
@@ -124,11 +122,11 @@ export default function OrderForm() {
                   <td className="border p-2">
                     <select {...register(`items.${idx}.size`)} className="border p-1 text-sm rounded">
                       <option value="">--</option>
-                      <option value="S">S</option>
-                      <option value="M">M</option>
-                      <option value="L">L</option>
-                      <option value="LL">LL</option>
-                      <option value="特注">特注</option>
+                      {product.sizes.map((sizeOption) => (
+                        <option key={sizeOption} value={sizeOption}>
+                          {sizeOption}
+                        </option>
+                      ))}
                     </select>
                   </td>
                   <td className="border p-2">
