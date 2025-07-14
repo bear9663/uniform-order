@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OrderRow from "./OrderRow";
-import { PRODUCTS } from "./products/product";
+import { useProductList } from "./products/product";
 import { useOrders } from "../hooks/useOrders"
 
 export default function AdminOrders() {
+  const { products: productList } = useProductList();
+
   const { orders, loading, error } = useOrders();
   const [search, setSearch] = useState("");
   const [sortAsc, setSortAsc] = useState(true);
@@ -30,16 +32,16 @@ export default function AdminOrders() {
   const downloadCSV = () => {
     const header = [
       "ID", "日時", "園児氏名", "保護者", "電話", "メール",
-      ...PRODUCTS.map(p => p.name),
+      ...productList.map(p => p.name),
       "合計金額"
     ];
     const rows = sorted.map(order => {
       const total = order.items.reduce(
         (sum, item, idx) =>
-          sum + Number(item.quantity) * PRODUCTS[idx].price,
+          sum + Number(item.quantity) * productList[idx].price,
         0
       );
-      const items = PRODUCTS.map((_, idx) => {
+      const items = productList.map((_, idx) => {
         const item = order.items[idx] || {};
         const size =
           item.size === "特注"
@@ -85,7 +87,7 @@ export default function AdminOrders() {
       <div className="mb-4 flex gap-2">
         <button
           onClick={() => setSortAsc(!sortAsc)}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-[#0c2a46] hover:bg-[#131f30] text-white font-bold py-2 px-4 rounded"
         >
           ID並び替え {sortAsc ? "▲" : "▼"}
         </button>
@@ -99,7 +101,7 @@ export default function AdminOrders() {
 
       <div className="overflow-x-auto">
         <table className="table-auto border-collapse border w-full text-sm">
-          <thead className="bg-blue-100">
+          <thead className="bg-[#ccd6e6]">
             <tr>
               <th className="border p-2">ID</th>
               <th className="border p-2">日時</th>

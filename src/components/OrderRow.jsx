@@ -1,8 +1,9 @@
-import { PRODUCTS } from "./products/product"
+import { useProductList } from "./products/product";
 
 export default function OrderRow({ order, isOpen, onToggle }) {
+    const { products: productList } = useProductList();
     const total = order.items.reduce((sum, item, idx) => {
-        const price = PRODUCTS[idx]?.price || 0;
+        const price = productList[idx]?.price || 0;
         return sum + Number(item.quantity) * price;
     }, 0);
 
@@ -18,7 +19,7 @@ export default function OrderRow({ order, isOpen, onToggle }) {
                 <td className="border p-2 text-center">
                 <button
                     onClick={() => onToggle(order.id)}
-                    className="text-blue-600"
+                    className="text-[#1e2e47]"
                 >
                     {isOpen ? "▲" : "▼"}
                 </button>
@@ -31,7 +32,7 @@ export default function OrderRow({ order, isOpen, onToggle }) {
                         <ul className="list-disc pl-6">
                         {order.items.map((item, idx) => {
                             if (Number(item.quantity) === 0) return null;
-                            const prod = PRODUCTS[idx] || {};
+                            const prod = productList[idx] || {};
                             const size =
                             item.size === "特注"
                                 ? `特注:${item.customSize}`

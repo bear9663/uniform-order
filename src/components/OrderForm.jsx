@@ -1,29 +1,11 @@
 import { useForm, useWatch } from "react-hook-form";
-
-const PRODUCTS = [
-  { name: "半ズボン", price: 3500 },
-  { name: "スカート", price: 5000 },
-  { name: "半袖ポロシャツ", price: 1750 },
-  { name: "長袖ポロシャツ", price: 1800 },
-  { name: "半袖体操着【上下セット】", price: 4300 },
-  { name: "半袖体操着 トップスのみ", price: 2500 },
-  { name: "半袖体操着 ボトムスのみ", price: 2150 },
-  { name: "長袖体操着（トップス）", price: 2200 },
-  { name: "ジャージ【上下セット】", price: 7500 },
-  { name: "ジャージ トップスのみ", price: 5000 },
-  { name: "ジャージ ボトムスのみ", price: 3000 },
-  { name: "クルーソックス", price: 500 },
-  { name: "ハイソックス", price: 600 },
-  { name: "紅白帽子", price: 1300 },
-  { name: "夏帽子", price: 1800 },
-  { name: "冬帽子", price: 1800 },
-  { name: "登園カバン", price: 5000 },
-  { name: "プールバッグ", price: 1000 },
-  { name: "ニットベスト（ネイビー）", price: 3000 },
-];
+import { useEffect } from "react";
+import { useProductList } from "./products/product";
 
 export default function OrderForm() {
-  const { register, control, handleSubmit, reset } = useForm({
+  const { products: productList, loading, error } = useProductList();
+
+  const { register, control, handleSubmit, reset, setValue } = useForm({
     defaultValues: {
       childName: "",
       furigana: "",
@@ -33,18 +15,23 @@ export default function OrderForm() {
       address: "",
       height: "",
       weight: "",
-      items: PRODUCTS.map(() => ({
-        size: "",
-        quantity: 0,
-        customSize: "",
-      })),
+      items: productList.map(() => ({ size: "", quantity: 0, customSize: "" })),
     },
   });
 
-  const items = useWatch({ control, name: "items" });
+  // 商品情報が更新されたら項目数を合わせる
+  useEffect(() => {
+    setValue(
+      "items",
+      productList.map(() => ({ size: "", quantity: 0, customSize: "" }))
+    );
+  }, [productList, setValue]);
+
+  const items = useWatch({ control, name: "items" }) || [];
 
   const total = items.reduce(
-    (sum, item, idx) => sum + Number(item.quantity) * PRODUCTS[idx].price,
+    (sum, item, idx) =>
+      sum + Number(item.quantity) * (productList[idx]?.price || 0),
     0
   );
 
@@ -65,15 +52,41 @@ export default function OrderForm() {
 
       if (response.ok) {
         alert("注文データを送信しました！");
-        reset();
+        reset({
+          childName: "",
+          furigana: "",
+          parentName: "",
+          phone: "",
+          email: "",
+          address: "",
+          height: "",
+          weight: "",
+          items: productList.map(() => ({ size: "", quantity: 0, customSize: "" })),
+        });
       } else {
         alert("送信に失敗しました。");
       }
     } catch (err) {
       console.error(err);
-      alert("通信エラーが発生しました。");
+      alert("通信エラーが発生しました。もう一度お試しください。");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p>商品を読み込み中...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <p className="text-red-600">商品情報の取得に失敗しました。</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -103,17 +116,17 @@ export default function OrderForm() {
               </tr>
             </thead>
             <tbody>
-              {PRODUCTS.map((product, idx) => (
+              {productList.map((product, idx) => (
                 <tr key={idx} className="even:bg-slate-50">
                   <td className="border p-2">{product.name}</td>
                   <td className="border p-2">
                     <select {...register(`items.${idx}.size`)} className="border p-1 text-sm rounded">
                       <option value="">--</option>
-                      <option value="100">100</option>
-                      <option value="110">110</option>
-                      <option value="120">120</option>
-                      <option value="130">130</option>
-                      <option value="特注">特注</option>
+                      {product.sizes.map((sizeOption) => (
+                        <option key={sizeOption} value={sizeOption}>
+                          {sizeOption}
+                        </option>
+                      ))}
                     </select>
                   </td>
                   <td className="border p-2">
