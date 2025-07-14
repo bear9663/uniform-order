@@ -1,3 +1,6 @@
+import { useProducts } from "../../hooks/useProducts";
+
+// 初期表示用の静的商品リスト
 export const PRODUCTS = [
   { name: "半ズボン", price: 3500 },
   { name: "スカート", price: 5000 },
@@ -19,3 +22,10 @@ export const PRODUCTS = [
   { name: "プールバッグ", price: 1000 },
   { name: "ニットベスト（ネイビー）", price: 3000 },
 ];
+
+// APIから取得した商品を優先し、取得できない場合は上記リストを利用する
+export function useProductList() {
+  const { products, loading, error } = useProducts();
+  const list = products.length > 0 ? products : PRODUCTS;
+  return { products: list, loading, error };
+}

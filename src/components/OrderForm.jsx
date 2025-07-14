@@ -1,36 +1,13 @@
 import { useForm, useWatch } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { useProducts } from "../hooks/useProducts";
+import { useEffect } from "react";
+import { useProductList, PRODUCTS } from "./products/product";
 
-// 旧フロントエンドで利用していたデフォルト商品リスト
-// サーバーから取得できなかった場合のフォールバックとして使用
-const DEFAULT_PRODUCTS = [
-  { name: "半ズボン", price: 3500 },
-  { name: "スカート", price: 5000 },
-  { name: "半袖ポロシャツ", price: 1750 },
-  { name: "長袖ポロシャツ", price: 1800 },
-  { name: "半袖体操着【上下セット】", price: 4300 },
-  { name: "半袖体操着 トップスのみ", price: 2500 },
-  { name: "半袖体操着 ボトムスのみ", price: 2150 },
-  { name: "長袖体操着（トップス）", price: 2200 },
-  { name: "ジャージ【上下セット】", price: 7500 },
-  { name: "ジャージ トップスのみ", price: 5000 },
-  { name: "ジャージ ボトムスのみ", price: 3000 },
-  { name: "クルーソックス", price: 500 },
-  { name: "ハイソックス", price: 600 },
-  { name: "紅白帽子", price: 1300 },
-  { name: "夏帽子", price: 1800 },
-  { name: "冬帽子", price: 1800 },
-  { name: "登園カバン", price: 5000 },
-  { name: "プールバッグ", price: 1000 },
-  { name: "ニットベスト（ネイビー）", price: 3000 },
-];
+// 商品一覧を取得し、APIが使えない場合は PRODUCTS を使用
 
 export default function OrderForm() {
-  const { products, loading, error } = useProducts();
-  const [initialized, setInitialized] = useState(false);
+  const { products: productList, loading, error } = useProductList();
 
-  const { register, control, handleSubmit, reset } = useForm({
+  const { register, control, handleSubmit, reset, setValue } = useForm({
     defaultValues: {
       childName: "",
       furigana: "",
@@ -40,30 +17,19 @@ export default function OrderForm() {
       address: "",
       height: "",
       weight: "",
-      items: [],
+      items: PRODUCTS.map(() => ({ size: "", quantity: 0, customSize: "" })),
     },
   });
 
+  // 商品情報が更新されたら項目数を合わせる
   useEffect(() => {
-    if (!initialized && (products.length > 0 || DEFAULT_PRODUCTS.length > 0)) {
-      const base = products.length > 0 ? products : DEFAULT_PRODUCTS;
-      reset({
-        childName: "",
-        furigana: "",
-        parentName: "",
-        phone: "",
-        email: "",
-        address: "",
-        height: "",
-        weight: "",
-        items: base.map(() => ({ size: "", quantity: 0, customSize: "" })),
-      });
-      setInitialized(true);
-    }
-  }, [products, reset, initialized]);
+    setValue(
+      "items",
+      productList.map(() => ({ size: "", quantity: 0, customSize: "" }))
+    );
+  }, [productList, setValue]);
 
   const items = useWatch({ control, name: "items" }) || [];
-  const productList = products.length > 0 ? products : DEFAULT_PRODUCTS;
 
   const total = items.reduce(
     (sum, item, idx) =>
@@ -88,7 +54,17 @@ export default function OrderForm() {
 
       if (response.ok) {
         alert("注文データを送信しました！");
-        reset();
+        reset({
+          childName: "",
+          furigana: "",
+          parentName: "",
+          phone: "",
+          email: "",
+          address: "",
+          height: "",
+          weight: "",
+          items: productList.map(() => ({ size: "", quantity: 0, customSize: "" })),
+        });
       } else {
         alert("送信に失敗しました。");
       }
@@ -98,7 +74,7 @@ export default function OrderForm() {
     }
   };
 
-  if (loading && !initialized) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <p>商品を読み込み中...</p>
