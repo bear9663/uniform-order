@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useProducts } from "../../hooks/useProducts" 
+
 export const PRODUCTS = [
   { name: "半ズボン", price: 3500 },
   { name: "スカート", price: 5000 },
@@ -19,3 +22,16 @@ export const PRODUCTS = [
   { name: "プールバッグ", price: 1000 },
   { name: "ニットベスト（ネイビー）", price: 3000 },
 ];
+
+
+export function useProductList() {
+  const { products, loading, error } = useProducts();
+
+  useEffect(() => {
+    if (error) {
+      alert("商品情報の取得に失敗しました。注文を行えません。");
+    }
+  }, [error]);
+
+  return { products, loading, error };
+}
